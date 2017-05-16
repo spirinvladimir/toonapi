@@ -12,6 +12,9 @@ Add to your package.json under dependencies:
 
 ```
 "toonapi":"git://github.com/JacoKoster/toonapi.git"
+
+//specific version:
+"toonapi":"git://github.com/JacoKoster/toonapi.git#0.1.0"
 ```
 
 ## Create a config.json
