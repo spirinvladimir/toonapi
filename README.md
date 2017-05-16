@@ -18,9 +18,6 @@ Add to your package.json under dependencies:
 
 ```
 {
-    "baseUrl": "api.toonapi.com",
-    "apiBaseUrl": "/toon/api/v1",
-    "tokenPath": "/token",
     "key": "",
     "secret": "",
     "username": "",

@@ -1,6 +1,10 @@
 const rp = require('request-promise');
 const extend = require('util')._extend;
 
+const baseUrl = "https://api.toonapi.com";
+const apiBaseUrl = "/toon/api/v1";
+const tokenPath = "/token";
+
 class Api {
     constructor(config) {
         this.config = config;
@@ -14,7 +18,7 @@ class Api {
     doCall(path, type, data, dataType, extraOptions) {
 
         let options = extend({
-            uri: this.config.baseUrl + this.config.apiBaseUrl + path,
+            uri: baseUrl + apiBaseUrl + path,
             method: type,
             body:  data ? data : undefined,
             headers: {
@@ -54,7 +58,7 @@ class Api {
         };
 
         let options = {
-            uri: this.config.baseUrl + this.config.tokenPath,
+            uri: baseUrl + tokenPath,
             form: postData,
             headers: {
                 'Authorization': 'Basic ' + new Buffer(this.config.key + ":" + this.config.secret).toString('base64')
@@ -63,7 +67,7 @@ class Api {
 
         let self = this;
 
-        let action = this.post('/token', postData, null, options);
+        let action = this.post(tokenPath, postData, null, options);
 
         action.then(function (data) {
             self.token = data;
