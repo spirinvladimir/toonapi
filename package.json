@@ -1,0 +1,22 @@
+{
+  "name": "toonapi",
+  "version": "0.1.0",
+  "description": "The ToonAPI service wrapper for Node",
+  "main": "index.js",
+  "scripts": {},
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:JacoKoster/toonapi.git"
+  },
+  "keywords": [
+    "toon",
+    "api",
+    "nodejs"
+  ],
+  "author": "Jaco Koster",
+  "license": "MIT",
+  "dependencies": {
+    "request": "^2.81.0",
+    "request-promise": "^4.2.1"
+  }
+}
