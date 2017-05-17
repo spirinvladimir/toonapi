@@ -1,6 +1,6 @@
 {
   "name": "toonapi",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "The ToonAPI service wrapper for Node",
   "main": "index.js",
   "scripts": {},

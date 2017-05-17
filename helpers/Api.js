@@ -35,7 +35,7 @@ class Api {
         return this.doCall(path, 'POST', data, dataType, extraOptions);
     }
 
-    put(path, data, dataType) {
+    put(path, data, dataType, extraOptions) {
         return this.doCall(path, 'PUT', data, dataType, extraOptions);
     }
 
