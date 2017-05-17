@@ -39,8 +39,8 @@ class Api {
         return this.doCall(path, 'PUT', data, dataType, extraOptions);
     }
 
-    get(path, dataType, useCache) {
-        return this.doCall(path, 'GET', undefined, dataType);
+    get(path, dataType, useCache, extraOptions) {
+        return this.doCall(path, 'GET', undefined, dataType, extraOptions);
     }
 
     delete(path, dataType) {

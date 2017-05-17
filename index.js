@@ -68,24 +68,44 @@ class ToonApi {
     consumption() {
         return {
             districtHeat: {
-                data() {
-                    return theApi.get('/consumption/districtheat/data');
+                data(interval, from, to) {
+                    let qs = {};
+                    if (interval) qs.interval = interval;
+                    if (from) qs.fromTime = from.getTime();
+                    if (to) qs.toTime = to.getTime();
+                    return theApi.get('/consumption/districtheat/data', undefined, undefined, {qs: qs});
                 }
             },
             electricity: {
-                data() {
-                    return theApi.get('/consumption/electricity/data');
+                data(interval, from, to) {
+                    let qs = {};
+                    if (interval) qs.interval = interval;
+                    if (from) qs.fromTime = from.getTime();
+                    if (to) qs.toTime = to.getTime();
+                    return theApi.get('/consumption/electricity/data', undefined, undefined, {qs: qs});
                 },
-                flows() {
-                    return theApi.get('/consumption/electricity/flows');
+                flows(interval, from, to) {
+                    let qs = {};
+                    if (interval) qs.interval = interval;
+                    if (from) qs.fromTime = from.getTime();
+                    if (to) qs.toTime = to.getTime();
+                    return theApi.get('/consumption/electricity/flows', undefined, undefined, {qs: qs});
                 }
             },
             gas: {
-                data() {
-                    return theApi.get('/consumption/gas/data');
+                data(interval, from, to) {
+                    let qs = {};
+                    if (interval) qs.interval = interval;
+                    if (from) qs.fromTime = from.getTime();
+                    if (to) qs.toTime = to.getTime();
+                    return theApi.get('/consumption/gas/data', undefined, undefined, {qs: qs});
                 },
-                flows() {
-                    return theApi.get('/consumption/gas/flows');
+                flows(interval, from, to) {
+                    let qs = {};
+                    if (interval) qs.interval = interval;
+                    if (from) qs.fromTime = from.getTime();
+                    if (to) qs.toTime = to.getTime();
+                    return theApi.get('/consumption/gas/flows', undefined, undefined, {qs: qs});
                 }
             }
         }
