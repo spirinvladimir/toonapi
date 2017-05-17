@@ -2,7 +2,7 @@
  * ToonApi Node wrapper for API v1
  */
 const Api = require('./helpers/Api');
-const theApi = null;
+let theApi = null;
 
 class ToonApi {
     constructor(config) {
