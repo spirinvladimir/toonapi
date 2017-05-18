@@ -51,10 +51,13 @@ class Api {
         return this.doCall(path, 'GET', undefined, dataType);
     }
     logon() {
+        let randomStr = Math.random().toString(36).substr(2, 12);
+
         let postData = {
             'username': this.config.username,
             'password': this.config.password,
-            'grant_type': 'password'
+            'grant_type': 'password',
+            'scope': 'device_' + randomStr
         };
 
         let options = {
