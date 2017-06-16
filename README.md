@@ -39,13 +39,13 @@ const Toon = new ToonApi(config);
 
 let logonPromise = new Promise(function (resolve, reject) {
     Toon.logon().then(function() {
-        Toon.agreements().get().then(function(data) {
+        Toon.agreements.get().then(function(data) {
 
             let agreement = {
                 agreementId : data[0].agreementId
             };
 
-            Toon.agreements().select(agreement).then(function() {
+            Toon.agreements.select(agreement).then(function() {
                 resolve();
             });
         });
@@ -56,7 +56,7 @@ logonPromise.then(function() {
     console.log('start doing all the things!');
 
     let loop = function() {
-        Toon.status().get().then(function (data) {
+        Toon.status.get().then(function (data) {
             console.log(data);
         });
     };
@@ -64,4 +64,18 @@ logonPromise.then(function() {
     setInterval(loop, 1000);
 });
 
+```
+
+## Consumption / Production data & flows 
+Several endpoints use dates for giving information about a specific time period. A normal date-object will be converted to a timestamp.
+```
+let consumptionRequest = { 
+    interval: 'hours', 
+    fromTime: new Date(), 
+    toTime: new Date() 
+}
+
+Toon.consumption.electricity.data(consumptionRequest).then(function (data) {
+    console.log(data);
+});
 ```

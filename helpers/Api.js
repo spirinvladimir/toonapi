@@ -1,10 +1,6 @@
 const rp = require('request-promise');
 const extend = require('util')._extend;
 
-const baseUrl = "https://api.toonapi.com";
-const apiBaseUrl = "/toon/api/v1";
-const tokenPath = "/token";
-
 class Api {
     constructor(config) {
         this.config = config;
@@ -15,11 +11,31 @@ class Api {
         }
     }
 
-    doCall(path, type, data, dataType, extraOptions) {
+    doCall(path, method = 'GET', data, extraOptions = {}) {
+        if(this.config.debug) {
+            let debugData = typeof(data) === 'object' ? JSON.stringify(data) : data;
+
+            console.log(`${method} : ${path} : ${debugData}`);
+        }
+
+        if(!this.token.access_token && path !== '/token') {
+            console.error('You have not logged in to the API');
+            return;
+            //TODO: Add recovery for missing token?
+        }
+
+        if(method === 'GET' && typeof(data) === 'object') {
+            Object.keys(data).forEach(function(key) {
+                if(typeof(data[key].getTime) === 'function') {
+                    data[key] = data[key].getTime();
+                }
+            });
+            extraOptions.qs = data;
+        }
 
         let options = extend({
-            uri: baseUrl + apiBaseUrl + path,
-            method: type,
+            uri: this.config.baseUrl + this.config.apiBaseUrl + path,
+            method: method,
             body:  data ? data : undefined,
             headers: {
                 'Authorization': 'Bearer ' + this.token.access_token,
@@ -29,26 +45,6 @@ class Api {
         }, extraOptions);
 
         return rp(options);
-    }
-
-    post(path, data, dataType, extraOptions) {
-        return this.doCall(path, 'POST', data, dataType, extraOptions);
-    }
-
-    put(path, data, dataType, extraOptions) {
-        return this.doCall(path, 'PUT', data, dataType, extraOptions);
-    }
-
-    get(path, dataType, useCache, extraOptions) {
-        return this.doCall(path, 'GET', undefined, dataType, extraOptions);
-    }
-
-    delete(path, dataType) {
-        return this.doCall(path, 'DELETE', undefined, dataType);
-    }
-
-    getMerge(path, dataType) {
-        return this.doCall(path, 'GET', undefined, dataType);
     }
     logon() {
         let randomStr = Math.random().toString(36).substr(2, 12);
@@ -61,7 +57,7 @@ class Api {
         };
 
         let options = {
-            uri: baseUrl + tokenPath,
+            uri: this.config.baseUrl + this.config.tokenPath,
             form: postData,
             headers: {
                 'Authorization': 'Basic ' + new Buffer(this.config.key + ":" + this.config.secret).toString('base64')
@@ -69,8 +65,7 @@ class Api {
         };
 
         let self = this;
-
-        let action = this.post(tokenPath, postData, null, options);
+        let action = this.doCall(this.config.tokenPath, 'POST', postData, options);
 
         action.then(function (data) {
             self.token = data;

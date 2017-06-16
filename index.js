@@ -1,141 +1,24 @@
 /**
- * ToonApi Node wrapper for API v1
+ * Node wrapper for Toon API
  */
-const Api = require('./helpers/Api');
-let theApi = null;
+const V1 = require('./api/v1.js');
+const V3 = require('./api/v3.js');
 
 class ToonApi {
     constructor(config) {
-        theApi = new Api(config);
+        config.debug = process.env.NODE_ENV === 'development';
+
+        switch(config.version) {
+            case 3:
+                return new V3(config);
+                break;
+            case 1:
+            default:
+                return new V1(config);
+                break;
+        }
     }
 
-    logon() {
-        return theApi.logon();
-    }
-
-    agreements() {
-        return {
-            get() {
-                return theApi.get('/agreements', undefined, true);
-            },
-            select(data) {
-                return theApi.post('/agreements', data, 'text');
-            }
-        };
-    }
-    status() {
-        return {
-            getComplete() {
-                return theApi.getMerge('/status');
-            },
-            get() {
-                return theApi.get('/status');
-            }
-        }
-    };
-    temperature() {
-        return {
-            get() {
-                return theApi.get('/temperature');
-            },
-            update(data) {
-                return theApi.put('/temperature', data, 'text');
-            },
-            programs: {
-                get() {
-                    return theApi.get('/temperature/programs');
-                },
-                create(data) {
-                    return theApi.post('/temperature/programs', data);
-                },
-                update(data) {
-                    return theApi.put('/temperature/programs', data);
-                },
-                delete(programId) {
-                    return theApi.delete(`/temperature/programs/${programId}`);
-                }
-            },
-            states: {
-                get() {
-                    return theApi.get('/temperature/states');
-                },
-                update(data) {
-                    return theApi.put('/temperature/states', data, 'text');
-                }
-            }
-        }
-    };
-    consumption() {
-        return {
-            districtHeat: {
-                data(interval, from, to) {
-                    let qs = {};
-                    if (interval) qs.interval = interval;
-                    if (from) qs.fromTime = from.getTime();
-                    if (to) qs.toTime = to.getTime();
-                    return theApi.get('/consumption/districtheat/data', undefined, undefined, {qs: qs});
-                }
-            },
-            electricity: {
-                data(interval, from, to) {
-                    let qs = {};
-                    if (interval) qs.interval = interval;
-                    if (from) qs.fromTime = from.getTime();
-                    if (to) qs.toTime = to.getTime();
-                    return theApi.get('/consumption/electricity/data', undefined, undefined, {qs: qs});
-                },
-                flows(interval, from, to) {
-                    let qs = {};
-                    if (interval) qs.interval = interval;
-                    if (from) qs.fromTime = from.getTime();
-                    if (to) qs.toTime = to.getTime();
-                    return theApi.get('/consumption/electricity/flows', undefined, undefined, {qs: qs});
-                }
-            },
-            gas: {
-                data(interval, from, to) {
-                    let qs = {};
-                    if (interval) qs.interval = interval;
-                    if (from) qs.fromTime = from.getTime();
-                    if (to) qs.toTime = to.getTime();
-                    return theApi.get('/consumption/gas/data', undefined, undefined, {qs: qs});
-                },
-                flows(interval, from, to) {
-                    let qs = {};
-                    if (interval) qs.interval = interval;
-                    if (from) qs.fromTime = from.getTime();
-                    if (to) qs.toTime = to.getTime();
-                    return theApi.get('/consumption/gas/flows', undefined, undefined, {qs: qs});
-                }
-            }
-        }
-    };
-    devices() {
-        return {
-            get() {
-                return theApi.get('/devices');
-            },
-            update(data) {
-                return theApi.put('/devices', data);
-            }
-        }
-    };
-    device() {
-        return {
-            get(deviceUUID){
-                return theApi.get(`/devices/${deviceUUID}`);
-            },
-            update(deviceUUID, data) {
-                return theApi.put(`/devices/${deviceUUID}`, data);
-            },
-            data(deviceUUID) {
-                return theApi.get(`/devices/${deviceUUID}/data`);
-            },
-            flows(deviceUUID) {
-                return theApi.get(`/devices/${deviceUUID}/flows`);
-            }
-        }
-    }
 }
 
 module.exports = ToonApi;
