@@ -17,17 +17,6 @@ Add to your package.json under dependencies:
 "toonapi":"git://github.com/JacoKoster/toonapi.git#0.4.0"
 ```
 
-## Create a config.json
-
-```
-{
-    "key": "",
-    "secret": "",
-    "username": "",
-    "password": ""
-}
-```
-
 ## Example with password grant (Development purposes only)
 config.json
 ```
