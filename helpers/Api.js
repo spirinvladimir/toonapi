@@ -1,14 +1,10 @@
 const rp = require('request-promise');
+const Promise = require('promise');
 const extend = require('util')._extend;
 
 class Api {
     constructor(config) {
         this.config = config;
-        this.token = {};
-
-        if (!this.config || !this.config.key || !this.config.secret || !this.config.username || !this.config.password) {
-            console.error("credentials are missing");
-        }
     }
 
     doCall(path, method = 'GET', data, extraOptions = {}) {
@@ -18,10 +14,12 @@ class Api {
             console.log(`${method} : ${path} : ${debugData}`);
         }
 
-        if(!this.token.access_token && path !== '/token') {
-            console.error('You have not logged in to the API');
-            return;
-            //TODO: Add recovery for missing token?
+        if(path !== '/token' && (!this.token || !this.token.access_token)) {
+            return Promise.reject(new Error('Missing Token','missing_token'));
+        } else if(this.token && this.token.access_token) {
+            extraOptions.headers = {
+                'Authorization': 'Bearer ' + this.token.access_token,
+            }
         }
 
         if(method === 'GET' && typeof(data) === 'object') {
@@ -38,7 +36,6 @@ class Api {
             method: method,
             body:  data ? data : undefined,
             headers: {
-                'Authorization': 'Bearer ' + this.token.access_token,
                 'Content-Type': 'application/json'
             },
             json: true // Automatically parses the JSON string in the response
@@ -46,35 +43,67 @@ class Api {
 
         return rp(options);
     }
-    logon() {
+    logon(logonData) {
+        let validationResult = this.validateLogonData(logonData);
+
+        if(validationResult) {
+            return Promise.reject(new Error(validationResult));
+        }
+
         let randomStr = Math.random().toString(36).substr(2, 12);
 
-        let postData = {
-            'username': this.config.username,
-            'password': this.config.password,
-            'grant_type': 'password',
+        let postData = extend({
             'scope': 'device_' + randomStr
-        };
+        }, logonData);
 
         let options = {
             uri: this.config.baseUrl + this.config.tokenPath,
-            form: postData,
-            headers: {
-                'Authorization': 'Basic ' + new Buffer(this.config.key + ":" + this.config.secret).toString('base64')
-            }
+            form: postData
         };
 
-        let self = this;
-        let action = this.doCall(this.config.tokenPath, 'POST', postData, options);
-
-        action.then(function (data) {
-            self.token = data;
-        }).catch(function (err) {
-            console.log(err);
-        });
-
-        return action;
+        return this.doCall(this.config.tokenPath, 'POST', postData, options);
     }
+    validateLogonData(data) {
+        if(!data) {
+            return "The logon object is required";
+        }
+        if(!data.client_id) {
+            return "A client key is required";
+        }
+        if(!data.client_secret) {
+            return "A client secret is required";
+        }
+        if(!data.grant_type) {
+            return "A grant_type is required, this can be 'authorization_code', 'password' or 'refresh_token'";
+        }
+        if(data.grant_type === 'password') {
+            console.warn('Grant type Password should only be used for development purposes!');
+            if(!data.username) {
+                return "A username is required";
+            }
+            if(!data.password) {
+                return "A password is required";
+            }
+            return false;
+        }
+
+        if(data.grant_type === 'authorization_code') {
+            if(!data.code) {
+                return "A authorizationcode is required";
+            }
+            if(!data.redirect_uri) {
+                return "A redirect uri is required";
+            }
+        }
+        if(data.grant_type === 'refresh_token') {
+            if(!data.refresh_token) {
+                return "A refresh_token is required";
+            }
+        }
+
+        return false;
+    }
+
 }
 
 module.exports = Api;

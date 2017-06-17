@@ -15,8 +15,12 @@ class BaseApi {
 
     setupEndpoints() {
         return {
-            logon() {
-                return theApi.logon();
+            logon(logonData) {
+                return theApi.logon(logonData);
+            },
+            token(token) {
+                theApi.token = token;
+                return this;
             }
         }
     }
