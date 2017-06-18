@@ -14,7 +14,46 @@ Add to your package.json under dependencies:
 "toonapi":"git://github.com/JacoKoster/toonapi.git"
 
 //specific version:
-"toonapi":"git://github.com/JacoKoster/toonapi.git#0.4.0"
+"toonapi":"git://github.com/JacoKoster/toonapi.git#0.5.0"
+```
+
+## Getting agreements
+```
+Toon.token('<TOKEN>').agreements.get().then(function (data) {
+    console.log(data);
+}).catch(function() {
+    console.log('Error getting agreements');
+});
+
+```
+
+## Getting a device-list
+```
+Toon.token('<TOKEN>').agreement('<AGREEMENT_ID>').devices.get().then(function (data) {
+    console.log(data);
+}).catch(function() {
+    console.log('Error getting status');
+});
+```
+
+## Consumption / Production data & flows 
+Several endpoints use dates for giving information about a specific time period. A normal date-object will be converted to a timestamp.
+```
+let consumptionRequest = { 
+    interval: 'hours', 
+    fromTime: new Date(), 
+    toTime: new Date() 
+}
+
+Toon.token(token).agreement('<AGREEMENT_ID>').consumption.electricity.data(consumptionRequest).then(function (data) {
+    console.log(data);
+});
+```
+Also usable without any request info
+```
+Toon.token(token).agreement('<AGREEMENT_ID>').consumption.electricity.data().then(function (data) {
+    console.log(data);
+});
 ```
 
 ## Example with password grant (Development purposes only)
@@ -31,39 +70,28 @@ config.json
 
 example.js
 ```
-const Promise = require('promise');
 const ToonApi = require('toonapi');
 const config = require('./config.json');
 
 const Toon = new ToonApi('v1');
 
 //Get the status of the display
-let agreementPromise = new Promise(function (resolve, reject) {
-    Toon.logon(config).then(function (token) {
-        Toon.token(token).agreements.get().then(function (data) {
+Toon.logon(config).then(function (token) {
+    return Toon.token(token).agreements.get().then(function (data) {
 
-            let agreement = {
-                agreementId: data[0].agreementId
-            };
+        let agreementId = data[0].agreementId;
 
-            Toon.agreements.select(agreement).then(function () {
-                resolve();
-            })
-        })
-    })
-});
-
-
-agreementPromise.then(function() {
-    console.log('start doing all the things!');
-
-    let loop = function() {
-        Toon.status.get().then(function (data) {
+        return Toon.agreement(agreementId).status.get().then(function (data) {
             console.log(data);
+        }).catch(function() {
+            console.log('Error getting status');
         });
-    };
 
-    setInterval(loop, 1000);
+    }).catch(function() {
+        console.log('Error getting agreements');
+    })
+}).catch(function() {
+    console.log('Error getting token');
 });
 
 ```
@@ -166,18 +194,4 @@ Toon.logon(refreshConfig).then(function (token) {
     console.log(token);
 });
 
-```
-
-## Consumption / Production data & flows 
-Several endpoints use dates for giving information about a specific time period. A normal date-object will be converted to a timestamp.
-```
-let consumptionRequest = { 
-    interval: 'hours', 
-    fromTime: new Date(), 
-    toTime: new Date() 
-}
-
-Toon.token(token).consumption.electricity.data(consumptionRequest).then(function (data) {
-    console.log(data);
-});
 ```

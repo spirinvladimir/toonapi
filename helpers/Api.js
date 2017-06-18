@@ -11,12 +11,10 @@ class Api {
         if(this.config.debug) {
             let debugData = typeof(data) === 'object' ? JSON.stringify(data) : data;
 
-            console.log(`${method} : ${path} : ${debugData}`);
+            console.log(`ToonApi: ${method} : ${path} : ${debugData}`);
         }
 
-        if(path !== '/token' && (!this.token || !this.token.access_token)) {
-            return Promise.reject(new Error('Missing Token','missing_token'));
-        } else if(this.token && this.token.access_token) {
+        if(this.token && this.token.access_token) {
             extraOptions.headers = {
                 'Authorization': 'Bearer ' + this.token.access_token,
             }
@@ -77,7 +75,7 @@ class Api {
             return "A grant_type is required, this can be 'authorization_code', 'password' or 'refresh_token'";
         }
         if(data.grant_type === 'password') {
-            console.warn('Grant type Password should only be used for development purposes!');
+            console.warn('ToonApi: Grant type Password should only be used for development purposes!');
             if(!data.username) {
                 return "A username is required";
             }

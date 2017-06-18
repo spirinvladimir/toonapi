@@ -2,7 +2,7 @@
  * Base class for the API classes
  */
 const Api = require('../helpers/Api');
-let theApi = null;
+const Promise = require('promise');
 
 class BaseApi {
     constructor(config) {
@@ -10,22 +10,37 @@ class BaseApi {
         return this.setupEndpoints();
     }
     init(config) {
-        theApi = new Api(config);
+        this.config = config;
+        this.theApi = new Api(config);
+        this.agreementId = null;
     }
 
     setupEndpoints() {
+        let self = this;
+
         return {
             logon(logonData) {
-                return theApi.logon(logonData);
+                return self.theApi.logon(logonData);
             },
             token(token) {
-                theApi.token = token;
+                self.theApi.token = token;
+                return this;
+            },
+            agreement(agreementId) {
+                self.agreementId = agreementId;
                 return this;
             }
         }
     }
     doCall(path, method, data, extraOptions) {
-        return theApi.doCall(path, method, data, extraOptions);
+        if(!this.agreementId) {
+            return Promise.reject(new Error('Agreement Id was not set','missing_agreement'));
+        }
+        if(!this.theApi.token || !this.theApi.token.access_token) {
+            return Promise.reject(new Error('Token was not set','missing_token'));
+        }
+
+        return this.theApi.doCall(path, method, data, extraOptions);
     }
 }
 

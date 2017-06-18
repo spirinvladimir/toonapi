@@ -22,125 +22,113 @@ class V3 extends BaseApi {
                     return self.doCall('/agreements');
                 }
             },
-            display(agreementId) {
-                if(!agreementId) {
-                    console.error('AgreementId is missing');
-                    return;
+            status: {
+                get() {
+                    return self.doCall(`/${this.agreementId}/status`);
                 }
-
+            },
+            consumption: {
+                districtHeat: {
+                    data(data) {
+                        return self.doCall(`/${this.agreementId}/consumption/districtheat/data`, 'GET', data);
+                    }
+                },
+                electricity: {
+                    data(data) {
+                        return self.doCall(`/${this.agreementId}/consumption/electricity/data`, 'GET', data);
+                    },
+                    flows(data) {
+                        return self.doCall(`/${this.agreementId}/consumption/electricity/flows`,'GET', data);
+                    }
+                },
+                gas: {
+                    data(data) {
+                        return self.doCall(`/${this.agreementId}/consumption/gas/data`, 'GET', data);
+                    },
+                    flows(data) {
+                        return self.doCall(`/${this.agreementId}/consumption/gas/flows`, 'GET', data);
+                    }
+                }
+            },
+            devices(deviceUUID) {
                 return {
-                    status: {
-                        get() {
-                            return self.doCall(`/${agreementId}/status`);
+                    get() {
+                        if(deviceUUID) {
+                            return self.doCall(`/${this.agreementId}/devices/${deviceUUID}`);
                         }
+                        return self.doCall(`/${this.agreementId}/devices`);
                     },
-                    consumption: {
-                        districtHeat: {
-                            data(data) {
-                                return self.doCall(`/${agreementId}/consumption/districtheat/data`, 'GET', data);
-                            }
-                        },
-                        electricity: {
-                            data(data) {
-                                return self.doCall(`/${agreementId}/consumption/electricity/data`, 'GET', data);
-                            },
-                            flows(data) {
-                                return self.doCall(`/${agreementId}/consumption/electricity/flows`,'GET', data);
-                            }
-                        },
-                        gas: {
-                            data(data) {
-                                return self.doCall(`/${agreementId}/consumption/gas/data`, 'GET', data);
-                            },
-                            flows(data) {
-                                return self.doCall(`/${agreementId}/consumption/gas/flows`, 'GET', data);
-                            }
+                    set(data) {
+                        if(deviceUUID) {
+                            return self.doCall(`/${this.agreementId}/devices/${deviceUUID}`, 'PUT', data);
                         }
+                        return self.doCall(`/${this.agreementId}/devices`,'PUT', data);
                     },
-                    devices(deviceUUID) {
-                        return {
-                            get() {
-                                if(deviceUUID) {
-                                    return self.doCall(`/${agreementId}/devices/${deviceUUID}`);
-                                }
-                                return self.doCall(`/${agreementId}/devices`);
-                            },
-                            set(data) {
-                                if(deviceUUID) {
-                                    return self.doCall(`/${agreementId}/devices/${deviceUUID}`, 'PUT', data);
-                                }
-                                return self.doCall(`/${agreementId}/devices`,'PUT', data);
-                            },
-                            data(data) {
-                                if(!deviceUUID) {
-                                    console.error('The devideUUID is missing');
-                                    return;
-                                }
-                                return self.doCall(`/${agreementId}/devices/${deviceUUID}/data`, 'GET', data);
-                            },
-                            flows(data) {
-                                if(!deviceUUID) {
-                                    console.error('The devideUUID is missing');
-                                    return;
-                                }
-                                return self.doCall(`/${agreementId}/devices/${deviceUUID}/flows`, 'GET', data);
-                            }
+                    data(data) {
+                        if(!deviceUUID) {
+                            return Promise.reject(new Error('Device Id was not given','missing_deviceid'));
+                        }
+                        return self.doCall(`/${this.agreementId}/devices/${deviceUUID}/data`, 'GET', data);
+                    },
+                    flows(data) {
+                        if(!deviceUUID) {
+                            return Promise.reject(new Error('Device Id was not given','missing_deviceid'));
+                        }
+                        return self.doCall(`/${this.agreementId}/devices/${deviceUUID}/flows`, 'GET', data);
+                    }
 
-                        };
+                };
+            },
+            production: {
+                electricity: {
+                    data(data) {
+                        return self.doCall(`/${this.agreementId}/production/electricity/data`, 'GET', data);
                     },
-                    production: {
-                        electricity: {
-                            data(data) {
-                                return self.doCall(`/${agreementId}/production/electricity/data`, 'GET', data);
-                            },
-                            delivery(data) {
-                                return self.doCall(`/${agreementId}/production/electricity/delivery`,'GET', data);
-                            },
-                            flows(data) {
-                                return self.doCall(`/${agreementId}/production/electricity/flows`,'GET', data);
-                            }
-                        }
+                    delivery(data) {
+                        return self.doCall(`/${this.agreementId}/production/electricity/delivery`,'GET', data);
                     },
-                    thermostat: {
-                        get() {
-                            return self.doCall(`/${agreementId}/thermostat`);
-                        },
-                        update(data) {
-                            return self.doCall(`/${agreementId}/thermostat`, 'PUT', data);
-                        },
-                        programs: {
-                            get() {
-                                return self.doCall(`/${agreementId}/thermostat/programs`);
-                            },
-                            update(data) {
-                                return self.doCall(`/${agreementId}/thermostat/programs`, 'PUT', data);
-                            }
-                        },
-                        states: {
-                            get() {
-                                return self.doCall(`/${agreementId}/thermostat/states`);
-                            },
-                            update(data) {
-                                return self.doCall(`/${agreementId}/thermostat/states`, 'PUT', data);
-                            }
-                        }
+                    flows(data) {
+                        return self.doCall(`/${this.agreementId}/production/electricity/flows`,'GET', data);
+                    }
+                }
+            },
+            thermostat: {
+                get() {
+                    return self.doCall(`/${this.agreementId}/thermostat`);
+                },
+                update(data) {
+                    return self.doCall(`/${this.agreementId}/thermostat`, 'PUT', data);
+                },
+                programs: {
+                    get() {
+                        return self.doCall(`/${this.agreementId}/thermostat/programs`);
                     },
-                    webhooks(webhookId) {
-                        return {
-                            get() {
-                                return self.doCall(`/${agreementId}/webhooks`);
-                            },
-                            create(data) {
-                                return self.doCall(`/${agreementId}/webhooks`, 'POST', data);
-                            },
-                            delete() {
-                                if(!webhookId) {
-                                    console.error('The webhookid is missing');
-                                    return;
-                                }
-                                return self.doCall(`/${agreementId}/webhooks/${webhookId}`, 'DELETE');
-                            }
+                    update(data) {
+                        return self.doCall(`/${this.agreementId}/thermostat/programs`, 'PUT', data);
+                    }
+                },
+                states: {
+                    get() {
+                        return self.doCall(`/${this.agreementId}/thermostat/states`);
+                    },
+                    update(data) {
+                        return self.doCall(`/${this.agreementId}/thermostat/states`, 'PUT', data);
+                    }
+                }
+            },
+            webhooks(webhookId) {
+                return {
+                    get() {
+                        return self.doCall(`/${this.agreementId}/webhooks`);
+                    },
+                    create(data) {
+                        return self.doCall(`/${this.agreementId}/webhooks`, 'POST', data);
+                    },
+                    delete() {
+                        if (!webhookId) {
+                            return Promise.reject(new Error('Webhook Id was not given','missing_webhookid'));
                         }
+                        return self.doCall(`/${this.agreementId}/webhooks/${webhookId}`, 'DELETE');
                     }
                 }
             }

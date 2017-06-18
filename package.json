@@ -1,6 +1,6 @@
 {
   "name": "toonapi",
-  "version": "0.3.0",
+  "version": "0.5.0",
   "description": "The ToonAPI service wrapper for Node",
   "main": "index.js",
   "scripts": {},
@@ -16,6 +16,7 @@
   "author": "Jaco Koster",
   "license": "MIT",
   "dependencies": {
+    "promise": "^7.3.0",
     "request": "^2.81.0",
     "request-promise": "^4.2.1"
   }

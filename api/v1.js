@@ -20,9 +20,6 @@ class V1 extends BaseApi {
             agreements: {
                 get() {
                     return self.doCall('/agreements');
-                },
-                select(data) {
-                    return self.doCall('/agreements', 'POST', data);
                 }
             },
             consumption: {
@@ -64,15 +61,13 @@ class V1 extends BaseApi {
                     },
                     data(data) {
                         if(!deviceUUID) {
-                            console.error('This functionality is not available');
-                            return;
+                            return Promise.reject(new Error('Device Id was not given','missing_deviceid'));
                         }
                         return self.doCall(`/devices/${deviceUUID}/data`, 'GET', data);
                     },
                     flows(data) {
                         if(!deviceUUID) {
-                            console.error('This functionality is not available');
-                            return;
+                            return Promise.reject(new Error('Device Id was not given','missing_deviceid'));
                         }
                         return self.doCall(`/devices/${deviceUUID}/flows`, 'GET', data);
                     }
@@ -105,6 +100,50 @@ class V1 extends BaseApi {
                     }
                 }
             }
+
+        });
+    }
+
+    /**
+     * Overrides the base functionality to make the post agreement thing transparent.
+     * @param path
+     * @param method
+     * @param data
+     * @param extraOptions
+     * @override BaseApi
+     * @returns Promise
+     */
+    doCall(path, method, data, extraOptions) {
+        if(path !== '/agreements' && !this.agreementId) {
+            return Promise.reject(new Error('Agreement Id was not set','missing_agreement'));
+        }
+        if(!this.theApi.token || !this.theApi.token.access_token) {
+            return Promise.reject(new Error('Token was not set','missing_token'));
+        }
+        let self = this;
+
+        return new Promise(function (resolve, reject) {
+            self.theApi.doCall(path, method, data, extraOptions).then(resolve).catch(function(error) {
+
+                if(error.error.message === 'Unable to get common name for the device by the provided customer id.') {
+
+                    if(self.config.debug) {
+                        console.log('ToonApi: API forgot what display we were talking to, sending a reminder');
+                    }
+
+                    let agreementObject = {
+                            agreementId: self.agreementId
+                    };
+
+                    //post the agreement
+                    return self.theApi.doCall('/agreements', 'POST', agreementObject).then(function() {
+                        //retry the original call
+                        return self.doCall(path, method, data, extraOptions).then(resolve).catch(reject);
+                    }).catch(reject)
+                } else {
+                    return reject(error);
+                }
+            });
 
         });
     }
