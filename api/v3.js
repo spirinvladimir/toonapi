@@ -7,7 +7,7 @@ const BaseApi = require('./base.js');
 class V3 extends BaseApi {
     init(config) {
         config.baseUrl = 'https://api.toonapi.com';
-        config.apiBaseUrl = '/toon/v3';
+        config.apiBaseUrl = '/toon/api/v3';
         config.tokenPath = '/token';
         super.init(config);
     }
@@ -24,29 +24,29 @@ class V3 extends BaseApi {
             },
             status: {
                 get() {
-                    return self.doCall(`/${this.agreementId}/status`);
+                    return self.doCall(`/${self.agreementId}/status`);
                 }
             },
             consumption: {
                 districtHeat: {
                     data(data) {
-                        return self.doCall(`/${this.agreementId}/consumption/districtheat/data`, 'GET', data);
+                        return self.doCall(`/${self.agreementId}/consumption/districtheat/data`, 'GET', data);
                     }
                 },
                 electricity: {
                     data(data) {
-                        return self.doCall(`/${this.agreementId}/consumption/electricity/data`, 'GET', data);
+                        return self.doCall(`/${self.agreementId}/consumption/electricity/data`, 'GET', data);
                     },
                     flows(data) {
-                        return self.doCall(`/${this.agreementId}/consumption/electricity/flows`,'GET', data);
+                        return self.doCall(`/${self.agreementId}/consumption/electricity/flows`,'GET', data);
                     }
                 },
                 gas: {
                     data(data) {
-                        return self.doCall(`/${this.agreementId}/consumption/gas/data`, 'GET', data);
+                        return self.doCall(`/${self.agreementId}/consumption/gas/data`, 'GET', data);
                     },
                     flows(data) {
-                        return self.doCall(`/${this.agreementId}/consumption/gas/flows`, 'GET', data);
+                        return self.doCall(`/${self.agreementId}/consumption/gas/flows`, 'GET', data);
                     }
                 }
             },
@@ -54,27 +54,27 @@ class V3 extends BaseApi {
                 return {
                     get() {
                         if(deviceUUID) {
-                            return self.doCall(`/${this.agreementId}/devices/${deviceUUID}`);
+                            return self.doCall(`/${self.agreementId}/devices/${deviceUUID}`);
                         }
-                        return self.doCall(`/${this.agreementId}/devices`);
+                        return self.doCall(`/${self.agreementId}/devices`);
                     },
                     set(data) {
                         if(deviceUUID) {
-                            return self.doCall(`/${this.agreementId}/devices/${deviceUUID}`, 'PUT', data);
+                            return self.doCall(`/${self.agreementId}/devices/${deviceUUID}`, 'PUT', data);
                         }
-                        return self.doCall(`/${this.agreementId}/devices`,'PUT', data);
+                        return self.doCall(`/${self.agreementId}/devices`,'PUT', data);
                     },
                     data(data) {
                         if(!deviceUUID) {
                             return Promise.reject(new Error('Device Id was not given','missing_deviceid'));
                         }
-                        return self.doCall(`/${this.agreementId}/devices/${deviceUUID}/data`, 'GET', data);
+                        return self.doCall(`/${self.agreementId}/devices/${deviceUUID}/data`, 'GET', data);
                     },
                     flows(data) {
                         if(!deviceUUID) {
                             return Promise.reject(new Error('Device Id was not given','missing_deviceid'));
                         }
-                        return self.doCall(`/${this.agreementId}/devices/${deviceUUID}/flows`, 'GET', data);
+                        return self.doCall(`/${self.agreementId}/devices/${deviceUUID}/flows`, 'GET', data);
                     }
 
                 };
@@ -82,53 +82,53 @@ class V3 extends BaseApi {
             production: {
                 electricity: {
                     data(data) {
-                        return self.doCall(`/${this.agreementId}/production/electricity/data`, 'GET', data);
+                        return self.doCall(`/${self.agreementId}/production/electricity/data`, 'GET', data);
                     },
                     delivery(data) {
-                        return self.doCall(`/${this.agreementId}/production/electricity/delivery`,'GET', data);
+                        return self.doCall(`/${self.agreementId}/production/electricity/delivery`,'GET', data);
                     },
                     flows(data) {
-                        return self.doCall(`/${this.agreementId}/production/electricity/flows`,'GET', data);
+                        return self.doCall(`/${self.agreementId}/production/electricity/flows`,'GET', data);
                     }
                 }
             },
             thermostat: {
                 get() {
-                    return self.doCall(`/${this.agreementId}/thermostat`);
+                    return self.doCall(`/${self.agreementId}/thermostat`);
                 },
-                update(data) {
-                    return self.doCall(`/${this.agreementId}/thermostat`, 'PUT', data);
+                set(data) {
+                    return self.doCall(`/${self.agreementId}/thermostat`, 'PUT', data);
                 },
                 programs: {
                     get() {
-                        return self.doCall(`/${this.agreementId}/thermostat/programs`);
+                        return self.doCall(`/${self.agreementId}/thermostat/programs`);
                     },
-                    update(data) {
-                        return self.doCall(`/${this.agreementId}/thermostat/programs`, 'PUT', data);
+                    set(data) {
+                        return self.doCall(`/${self.agreementId}/thermostat/programs`, 'PUT', data);
                     }
                 },
                 states: {
                     get() {
-                        return self.doCall(`/${this.agreementId}/thermostat/states`);
+                        return self.doCall(`/${self.agreementId}/thermostat/states`);
                     },
-                    update(data) {
-                        return self.doCall(`/${this.agreementId}/thermostat/states`, 'PUT', data);
+                    set(data) {
+                        return self.doCall(`/${self.agreementId}/thermostat/states`, 'PUT', data);
                     }
                 }
             },
             webhooks(webhookId) {
                 return {
                     get() {
-                        return self.doCall(`/${this.agreementId}/webhooks`);
+                        return self.doCall(`/${self.agreementId}/webhooks`);
                     },
                     create(data) {
-                        return self.doCall(`/${this.agreementId}/webhooks`, 'POST', data);
+                        return self.doCall(`/${self.agreementId}/webhooks`, 'POST', data);
                     },
                     delete() {
                         if (!webhookId) {
                             return Promise.reject(new Error('Webhook Id was not given','missing_webhookid'));
                         }
-                        return self.doCall(`/${this.agreementId}/webhooks/${webhookId}`, 'DELETE');
+                        return self.doCall(`/${self.agreementId}/webhooks/${webhookId}`, 'DELETE');
                     }
                 }
             }

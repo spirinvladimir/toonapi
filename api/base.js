@@ -33,7 +33,7 @@ class BaseApi {
         }
     }
     doCall(path, method, data, extraOptions) {
-        if(!this.agreementId) {
+        if(path !== '/agreements' && !this.agreementId) {
             return Promise.reject(new Error('Agreement Id was not set','missing_agreement'));
         }
         if(!this.theApi.token || !this.theApi.token.access_token) {
