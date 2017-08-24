@@ -3,7 +3,10 @@
   "version": "0.5.0",
   "description": "The ToonAPI service wrapper for Node",
   "main": "index.js",
-  "scripts": {},
+  "scripts": {
+    "test": "ava",
+    "cover": "nyc ava"
+  },
   "repository": {
     "type": "git",
     "url": "git@github.com:JacoKoster/toonapi.git"
@@ -19,5 +22,9 @@
     "promise": "^7.3.0",
     "request": "^2.81.0",
     "request-promise": "^4.2.1"
+  },
+  "devDependencies": {
+    "ava": "0.22.0",
+    "nyc": "11.1.0"
   }
 }
